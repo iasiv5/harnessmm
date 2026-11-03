@@ -1,0 +1,39 @@
+{
+  "meta": {
+    "title": "Agent 早就想好了下一步，为什么还要再问一遍模型？",
+    "author": "iasi",
+    "date": "2026.11.03",
+    "reading_time": "约 6 分钟",
+    "tags": ["Agent", "Harness", "Token 效率", "HarnessMM"],
+    "subtitle": "照着 HarnessMM 论文搭的最小实验：把已经确定的决策存下来、用真实结果去触发，验证链调用从 5 次降到 3 次，Token 降 29.6%。",
+    "lang": null,
+    "theme": "ink-classic"
+  },
+  "upgrades": [
+    {
+      "type": "process",
+      "lines": [21, 23],
+      "items": [
+        {
+          "title": "写清单",
+          "desc": "模型在交出当前动作的这一轮里，顺手把后面已经确定的几步也写下来，包括用什么命令、参数是什么、谁先谁后，每一步再配一个完成条件，论文管它叫守卫。"
+        },
+        {
+          "title": "对答案",
+          "desc": "工具跑完后，真实的输出和退出码先回到 Harness 手里，由 Harness 逐条对照守卫。对上了，就直接执行清单里的下一步，这一次模型调用就省掉了；对不上，或者出现清单没料到的情况，控制权马上交回模型。"
+        }
+      ]
+    },
+    {
+      "type": "gallery",
+      "lines": [33, 34, 35],
+      "items": [
+        { "title": "R1 每步回调", "desc": "还原默认循环，每跑完一条命令都问一次模型" },
+        { "title": "R2 决策清单", "desc": "模型一次写好后续清单，Harness 对照真实结果自动执行" },
+        { "title": "R3 故障注入", "desc": "和 R2 一样，但我在工具层故意制造一次真实失败，看系统怎么收场" }
+      ]
+    },
+    { "type": "pullquote", "line": 55 },
+    { "type": "highlight", "line": 89, "label": "一句话总结" }
+  ]
+}
