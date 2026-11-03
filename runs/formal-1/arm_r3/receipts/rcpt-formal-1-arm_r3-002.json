@@ -1,0 +1,34 @@
+{
+  "tool_receipt_id": "rcpt-formal-1-arm_r3-002",
+  "tool_name": "run_command",
+  "args": {
+    "argv": [
+      "python",
+      "-m",
+      "pytest",
+      "tests/integration",
+      "-q"
+    ]
+  },
+  "timestamp": "2026-11-03T10:14:05.372067+00:00",
+  "exit_code": 1,
+  "stdout": "F....                                                                    [100%]\n=================================== FAILURES ===================================\n_________________________ test_environment_probe_clean _________________________\n\n    def test_environment_probe_clean():\n        injected = os.environ.get(\"HARNESSMM_FAULT_INJECT\")\n>       assert injected != \"integration\", (\n            \"HARNESSMM TEACHING RIG: injected integration fault is ACTIVE \"\n            \"(env HARNESSMM_FAULT_INJECT=integration). This failure is \"\n            \"deliberately injected by the experiment harness and is recorded \"\n            \"as an injected_fault event in the run ledger.\"\n        )\nE       AssertionError: HARNESSMM TEACHING RIG: injected integration fault is ACTIVE (env HARNESSMM_FAULT_INJECT=integration). This failure is deliberately injected by the experiment harness and is recorded as an injected_fault event in the run ledger.\nE       assert 'integration' != 'integration'\n\ntests/integration/test_environment_probe.py:15: AssertionError\n=========================== short test summary info ============================\nFAILED tests/integration/test_environment_probe.py::test_environment_probe_clean\n1 failed, 4 passed in 0.04s\n",
+  "stderr": "",
+  "duration_s": 0.259826,
+  "timed_out": false,
+  "whitelist_entry": "python -m pytest tests/integration -q",
+  "resolved_argv": [
+    "<workspace>/adhoc_jobs/harnessmm_mechanism/.venv/bin/python",
+    "-m",
+    "pytest",
+    "tests/integration",
+    "-q"
+  ],
+  "injected_fault": {
+    "injection_id": "inj-formal-1-arm_r3-1",
+    "env_var": "HARNESSMM_FAULT_INJECT",
+    "env_value": "integration",
+    "note": "teaching-rig injected integration fault; real non-zero exit; one-shot"
+  },
+  "tool_receipt_hash": "sha256:357d4fba7249f6c7"
+}

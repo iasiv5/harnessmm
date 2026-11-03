@@ -1,0 +1,27 @@
+{
+  "tool_receipt_id": "rcpt-dev-1-arm_r1-003",
+  "tool_name": "run_command",
+  "args": {
+    "argv": [
+      "python",
+      "tools/build_artifact.py",
+      "--out",
+      "dist/package.zip"
+    ]
+  },
+  "timestamp": "2026-11-03T10:09:12.382520+00:00",
+  "exit_code": 0,
+  "stdout": "BUILD OK: <workspace>/adhoc_jobs/harnessmm_mechanism/runs/dev-1/arm_r1/workspace/dist/package.zip (1222 bytes, 2 files + manifest)\n",
+  "stderr": "",
+  "duration_s": 0.046546,
+  "timed_out": false,
+  "whitelist_entry": "python tools/build_artifact.py --out dist/package.zip",
+  "resolved_argv": [
+    "<workspace>/adhoc_jobs/harnessmm_mechanism/.venv/bin/python",
+    "tools/build_artifact.py",
+    "--out",
+    "dist/package.zip"
+  ],
+  "injected_fault": null,
+  "tool_receipt_hash": "sha256:82f9a5dc33899693"
+}

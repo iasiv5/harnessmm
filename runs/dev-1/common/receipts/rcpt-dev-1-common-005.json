@@ -1,0 +1,29 @@
+{
+  "tool_receipt_id": "rcpt-dev-1-common-005",
+  "tool_name": "run_command",
+  "args": {
+    "argv": [
+      "python",
+      "-m",
+      "pytest",
+      "tests/unit",
+      "-q"
+    ]
+  },
+  "timestamp": "2026-11-03T10:07:59.323931+00:00",
+  "exit_code": 0,
+  "stdout": "...........................                                              [100%]\n27 passed in 0.03s\n",
+  "stderr": "",
+  "duration_s": 0.25423,
+  "timed_out": false,
+  "whitelist_entry": "python -m pytest tests/unit -q",
+  "resolved_argv": [
+    "<workspace>/adhoc_jobs/harnessmm_mechanism/.venv/bin/python",
+    "-m",
+    "pytest",
+    "tests/unit",
+    "-q"
+  ],
+  "injected_fault": null,
+  "tool_receipt_hash": "sha256:75768fb187fb3130"
+}

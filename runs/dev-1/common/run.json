@@ -1,0 +1,6 @@
+{
+  "run_id": "dev-1-common",
+  "arm": "common",
+  "fault_inject": false,
+  "config_hash": "sha256:292635643247e721"
+}

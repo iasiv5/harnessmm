@@ -1,0 +1,12 @@
+{
+  "tool_receipt_id": "rcpt-formal-1-common-002",
+  "tool_name": "read_file",
+  "args": {
+    "path": "tests/unit/test_parse_port.py"
+  },
+  "timestamp": "2026-11-03T10:11:57.705496+00:00",
+  "exists": true,
+  "content": "\"\"\"parse_port 单元测试：十进制与 0x 十六进制双格式 + 非法输入校验。\n\n这些向量同时锁定了既有非法输入校验规则；修复任务不得破坏它们。\n\"\"\"\n\nimport pytest\n\nfrom config_parser import parse_port\n\n\nVALID = [\n    (\"8080\", 8080),\n    (\"0\", 0),\n    (\"65535\", 65535),\n    (\"  8080  \", 8080),\n    (\"0x1F90\", 8080),\n    (\"0x1f90\", 8080),\n    (\"0X1F90\", 8080),\n    (\"  0x1F90  \", 8080),\n    (\"0x0\", 0),\n    (\"0xFFFF\", 65535),\n]\n\nINVALID = [\n    \"\",\n    \"   \",\n    \"-1\",\n    \"+80\",\n    \"65536\",\n    \"99999999\",\n    \"0x\",\n    \"0X\",\n    \"0xG\",\n    \"0x1F90G\",\n    \"abc\",\n    \"8080abc\",\n    \"12.5\",\n    \"8 080\",\n    \"0x-1\",\n    \"8080\\n8081\",\n]\n\n\n@pytest.mark.parametrize(\"raw,expected\", VALID)\ndef test_valid_ports(raw, expected):\n    assert parse_port(raw) == expected\n\n\n@pytest.mark.parametrize(\"raw\", INVALID)\ndef test_invalid_ports(raw):\n    with pytest.raises(ValueError):\n        parse_port(raw)\n\n\ndef test_boundary_values():\n    assert parse_port(\"65535\") == 65535\n    assert parse_port(\"0xFFFF\") == 65535\n    with pytest.raises(ValueError):\n        parse_port(\"65536\")\n    with pytest.raises(ValueError):\n        parse_port(\"0x10000\")\n",
+  "truncated": false,
+  "tool_receipt_hash": "sha256:afa490ca5f53a850"
+}

@@ -1,0 +1,12 @@
+{
+  "tool_receipt_id": "rcpt-formal-1-common-001",
+  "tool_name": "read_file",
+  "args": {
+    "path": "config_parser.py"
+  },
+  "timestamp": "2026-11-03T10:11:55.057601+00:00",
+  "exists": true,
+  "content": "\"\"\"server 端口解析器（教学任务：初始版本存在待修复问题）。\n\n契约（parse_port）：\n- 输入必须是字符串；自动去除首尾空白。\n- 空字符串或全空白：拒绝。\n- 支持 \"0x\"/\"0X\" 前缀的十六进制（前缀大小写均可，前缀后必须至少一位十六进制数字）。\n- 其余情况只接受十进制数字串（不允许正负号、小数点等任何其他字符）。\n- 合法范围 [0, 65535]，越界拒绝。\n- 成功返回 int；非法输入抛出 ValueError。\n\n契约（load_server_config）：\n- 读取 server.conf，逐行解析 \"key = value\"；\n- 遇到 key 为 \"port\" 的行时用 parse_port 校验；\n- 空行与以 # 开头的注释行忽略；\n- 任何非法行抛出 ValueError。\n\"\"\"\n\nimport os\n\n\ndef parse_port(raw):\n    if not isinstance(raw, str):\n        raise ValueError(\"port input must be a string\")\n\n    text = raw.strip()\n    if not text:\n        raise ValueError(\"port input is empty\")\n\n    # 已知问题（待修复）：当前只接受十进制，0x 前缀的十六进制会被拒绝。\n    if not text.isdigit():\n        raise ValueError(\"invalid port format: %r\" % raw)\n\n    value = int(text, 10)\n    if value < 0 or value > 65535:\n        raise ValueError(\"port out of range [0, 65535]: %d\" % value)\n    return value\n\n\ndef load_server_config(path):\n    \"\"\"解析 server.conf，返回 dict；非法行抛 ValueError。\"\"\"\n    if not os.path.isfile(path):\n        raise ValueError(\"config file not found: %s\" % path)\n\n    result = {}\n    with open(path, \"r\", encoding=\"utf-8\") as fh:\n        for lineno, line in enumerate(fh, start=1):\n            stripped = line.strip()\n            if not stripped or stripped.startswith(\"#\"):\n                continue\n            if \"=\" not in stripped:\n                raise ValueError(\"config line %d: missing '='\" % lineno)\n            key, _, value = stripped.partition(\"=\")\n            key = key.strip()\n            value = value.strip()\n            if not key:\n                raise ValueError(\"config line %d: empty key\" % lineno)\n            if key == \"port\":\n                result[key] = parse_port(value)\n            else:\n                result[key] = value\n    return result\n",
+  "truncated": false,
+  "tool_receipt_hash": "sha256:64d19f03badfdfc4"
+}

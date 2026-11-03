@@ -1,0 +1,43 @@
+{
+  "graph_id": "verify-chain-dev1-retry",
+  "rationale": "重试剩余的 N3/N4，命令参数固定不变。",
+  "nodes": [
+    {
+      "node_id": "n2",
+      "tool_name": "run_command",
+      "args": {
+        "argv": [
+          "python",
+          "tools/build_artifact.py",
+          "--out",
+          "dist/package.zip"
+        ]
+      },
+      "depends_on": "root",
+      "guard": {
+        "exit_code": 0
+      },
+      "order": 0
+    },
+    {
+      "node_id": "n3",
+      "tool_name": "run_command",
+      "args": {
+        "argv": [
+          "python",
+          "tools/verify_artifact.py",
+          "--file",
+          "dist/package.zip"
+        ]
+      },
+      "depends_on": "n2",
+      "guard": {
+        "exit_code": 0
+      },
+      "order": 1
+    }
+  ],
+  "workspace_hash_at_authoring": "sha256:e06a061b4dec86493b713827",
+  "authored_in_request_id": "req-dev-1-arm_r3-002",
+  "graph_hash": "sha256:e9cf79839c00a188"
+}

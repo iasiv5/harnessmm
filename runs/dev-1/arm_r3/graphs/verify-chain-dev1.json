@@ -1,0 +1,61 @@
+{
+  "graph_id": "verify-chain-dev1",
+  "rationale": "工作区与修复完成时一致，四条验证命令参数均为白名单固定值，按顺序执行即可。",
+  "nodes": [
+    {
+      "node_id": "n1",
+      "tool_name": "run_command",
+      "args": {
+        "argv": [
+          "python",
+          "-m",
+          "pytest",
+          "tests/integration",
+          "-q"
+        ]
+      },
+      "depends_on": "root",
+      "guard": {
+        "exit_code": 0
+      },
+      "order": 0
+    },
+    {
+      "node_id": "n2",
+      "tool_name": "run_command",
+      "args": {
+        "argv": [
+          "python",
+          "tools/build_artifact.py",
+          "--out",
+          "dist/package.zip"
+        ]
+      },
+      "depends_on": "n1",
+      "guard": {
+        "exit_code": 0
+      },
+      "order": 1
+    },
+    {
+      "node_id": "n3",
+      "tool_name": "run_command",
+      "args": {
+        "argv": [
+          "python",
+          "tools/verify_artifact.py",
+          "--file",
+          "dist/package.zip"
+        ]
+      },
+      "depends_on": "n2",
+      "guard": {
+        "exit_code": 0
+      },
+      "order": 2
+    }
+  ],
+  "workspace_hash_at_authoring": "sha256:e06a061b4dec86493b713827",
+  "authored_in_request_id": "req-dev-1-arm_r3-001",
+  "graph_hash": "sha256:a474f70acc158773"
+}

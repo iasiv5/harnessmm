@@ -1,0 +1,90 @@
+{
+  "run_dir": "<workspace>/adhoc_jobs/harnessmm_mechanism/runs/dev-1/arm_r2",
+  "arm": "R2",
+  "verdict": "PASS",
+  "checks": [
+    {
+      "check": "arm_matches_expected",
+      "ok": true,
+      "detail": "arm=R2 expected=R2"
+    },
+    {
+      "check": "S_no_synthetic_responses",
+      "ok": true,
+      "detail": "0 synthetic ledger records found: []"
+    },
+    {
+      "check": "sequences_monotonic",
+      "ok": true,
+      "detail": "14 events, seq range 1..14"
+    },
+    {
+      "check": "required_fields_present",
+      "ok": true,
+      "detail": "0 events missing fields"
+    },
+    {
+      "check": "1_graph_authored_before_execution",
+      "ok": true,
+      "detail": "1 graphs authored before use"
+    },
+    {
+      "check": "2_executed_args_equal_saved_args",
+      "ok": true,
+      "detail": "3 bypasses args-verified"
+    },
+    {
+      "check": "3_prior_receipt_satisfies_guard",
+      "ok": true,
+      "detail": "3 bypasses guard-verified"
+    },
+    {
+      "check": "4_node_executed_at_most_once",
+      "ok": true,
+      "detail": "0 duplicates []"
+    },
+    {
+      "check": "5_graph_spans_multiple_feedbacks",
+      "ok": true,
+      "detail": "graphs with >=2 nodes: {'verify-chain-dev1': ['n2_integration', 'n3_build', 'n4_verify']}"
+    },
+    {
+      "check": "6_bypass_has_no_model_request",
+      "ok": true,
+      "detail": "3 bypasses w/o request; 2 model events match ledger"
+    },
+    {
+      "check": "7_fault_blocked_downstream",
+      "ok": true,
+      "detail": "not applicable (arm=R2)"
+    },
+    {
+      "check": "8_fallback_produces_real_model_request",
+      "ok": true,
+      "detail": "0 fallbacks all recovered to model"
+    },
+    {
+      "check": "9_workspace_change_invalidates_graph",
+      "ok": true,
+      "detail": "0 workspace-change invalidations"
+    },
+    {
+      "check": "10_replay_matches_events",
+      "ok": true,
+      "detail": "replay matches embedded events hash"
+    }
+  ],
+  "totals": {
+    "events": 14,
+    "model_requests": 2,
+    "bypasses": 3,
+    "graphs_authored": 1,
+    "graphs_invalidated": 0,
+    "faults_injected": 0,
+    "fallbacks": 0,
+    "ledger_tokens": {
+      "in": 13680,
+      "out": 439
+    }
+  }
+}

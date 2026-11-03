@@ -1,0 +1,12 @@
+{
+  "tool_receipt_id": "rcpt-formal-1-common-008",
+  "tool_name": "read_file",
+  "args": {
+    "path": "tools/build_artifact.py"
+  },
+  "timestamp": "2026-11-03T10:12:21.999640+00:00",
+  "exists": true,
+  "content": "#!/usr/bin/env python3\n\"\"\"构建交付产物 dist/package.zip。\n\n产物包含：config_parser.py、server.conf、manifest.json。\nmanifest.json 记录每个打包文件的 sha256 与构建元数据，供 verify_artifact.py\n做实质校验（哈希比对 + 产物内解析器行为抽查），不是只检查文件存在。\n\"\"\"\n\nimport argparse\nimport hashlib\nimport json\nimport os\nimport sys\nimport zipfile\nfrom datetime import datetime, timezone\n\nBASE = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))\nPACKAGE_FILES = [\"config_parser.py\", \"server.conf\"]\n\n\ndef sha256_bytes(data):\n    return hashlib.sha256(data).hexdigest()\n\n\ndef main():\n    ap = argparse.ArgumentParser()\n    ap.add_argument(\"--out\", default=\"dist/package.zip\")\n    args = ap.parse_args()\n\n    out_path = os.path.join(BASE, args.out) if not os.path.isabs(args.out) else args.out\n    os.makedirs(os.path.dirname(out_path), exist_ok=True)\n\n    manifest = {\n        \"artifact\": \"harnessmm-teaching-package\",\n        \"task_id\": \"config-port-hex\",\n        \"created_at\": datetime.now(timezone.utc).isoformat(),\n        \"files\": {},\n    }\n\n    with zipfile.ZipFile(out_path, \"w\", zipfile.ZIP_DEFLATED) as zf:\n        for rel in PACKAGE_FILES:\n            src = os.path.join(BASE, rel)\n            if not os.path.isfile(src):\n                print(\"BUILD FAIL: missing file %s\" % rel, file=sys.stderr)\n                return 2\n            with open(src, \"rb\") as fh:\n                data = fh.read()\n            zf.writestr(rel, data)\n            manifest[\"files\"][rel] = {\n                \"sha256\": sha256_bytes(data),\n                \"bytes\": len(data),\n            }\n        zf.writestr(\"manifest.json\", json.dumps(manifest, indent=2, ensure_ascii=False))\n\n    size = os.path.getsize(out_path)\n    print(\"BUILD OK: %s (%d bytes, %d files + manifest)\"\n          % (out_path, size, len(PACKAGE_FILES)))\n    return 0\n\n\nif __name__ == \"__main__\":\n    sys.exit(main())\n",
+  "truncated": false,
+  "tool_receipt_hash": "sha256:026e9830ffa0ad27"
+}

@@ -1,0 +1,29 @@
+{
+  "tool_receipt_id": "rcpt-dev-1-common-006",
+  "tool_name": "run_command",
+  "args": {
+    "argv": [
+      "python",
+      "-m",
+      "pytest",
+      "tests/integration",
+      "-q"
+    ]
+  },
+  "timestamp": "2026-11-03T10:08:02.128219+00:00",
+  "exit_code": 2,
+  "stdout": "\n==================================== ERRORS ====================================\n___________ ERROR collecting tests/integration/test_server_config.py ___________\nImportError while importing test module '<workspace>/adhoc_jobs/harnessmm_mechanism/runs/dev-1/common/workspace/tests/integration/test_server_config.py'.\nHint: make sure your test modules/packages have valid Python names.\nTraceback:\n~/.local/share/uv/python/cpython-3.11.16-linux-x86_64-gnu/lib/python3.11/importlib/__init__.py:126: in import_module\n    return _bootstrap._gcd_import(name[level:], package, level)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\ntests/integration/test_server_config.py:10: in <module>\n    from config_parser import load_server_config\nE   ImportError: cannot import name 'load_server_config' from 'config_parser' (<workspace>/adhoc_jobs/harnessmm_mechanism/runs/dev-1/common/workspace/config_parser.py)\n=========================== short test summary info ============================\nERROR tests/integration/test_server_config.py\n!!!!!!!!!!!!!!!!!!!! Interrupted: 1 error during collection !!!!!!!!!!!!!!!!!!!!\n1 error in 0.12s\n",
+  "stderr": "",
+  "duration_s": 0.348891,
+  "timed_out": false,
+  "whitelist_entry": "python -m pytest tests/integration -q",
+  "resolved_argv": [
+    "<workspace>/adhoc_jobs/harnessmm_mechanism/.venv/bin/python",
+    "-m",
+    "pytest",
+    "tests/integration",
+    "-q"
+  ],
+  "injected_fault": null,
+  "tool_receipt_hash": "sha256:a58786f21ec8c73d"
+}

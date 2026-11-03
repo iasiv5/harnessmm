@@ -1,0 +1,6 @@
+{
+  "run_id": "formal-1-arm_r2",
+  "arm": "R2",
+  "fault_inject": false,
+  "config_hash": "sha256:292635643247e721"
+}

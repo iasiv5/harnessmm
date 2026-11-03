@@ -1,0 +1,51 @@
+{
+  "frozen_config": {
+    "config_version": "v1",
+    "provider": "zai-coding-cn",
+    "model": "glm-5.3-flash",
+    "base_url": "https://open.bigmodel.cn/api/coding/paas/v4",
+    "thinking": "disabled",
+    "temperature": 0.1,
+    "max_tokens_action": 2000,
+    "max_tokens_summary": 1500,
+    "per_call_timeout_s": 120,
+    "max_retries_transport": 2,
+    "budget_common_calls": 24,
+    "budget_arm_calls": 16,
+    "budget_max_total_tokens_per_run": 400000,
+    "tool_timeout_s": 180,
+    "command_whitelist": [
+      "python -m pytest tests/unit -q",
+      "python -m pytest tests/integration -q",
+      "python -m pytest tests -q",
+      "python tools/build_artifact.py --out dist/package.zip",
+      "python tools/verify_artifact.py --file dist/package.zip"
+    ],
+    "tool_timeout_s_per_command": 180,
+    "readable_paths": "*",
+    "writable_paths": [
+      "config_parser.py"
+    ],
+    "protected_files": [
+      "server.conf",
+      "tests/unit/test_parse_port.py",
+      "tests/integration/test_server_config.py",
+      "tests/integration/test_environment_probe.py",
+      "tools/build_artifact.py",
+      "tools/verify_artifact.py"
+    ],
+    "context_policy": "full_history",
+    "fault_inject_env": "HARNESSMM_FAULT_INJECT",
+    "fault_inject_value": "integration",
+    "fault_inject_command": "python -m pytest tests/integration -q",
+    "max_graph_nodes": 8,
+    "guard_allowed_keys": [
+      "exit_code",
+      "stdout_contains",
+      "stderr_contains"
+    ],
+    "task_id": "config-port-hex",
+    "task_prompt_version": "v1"
+  },
+  "config_hash": "sha256:292635643247e721"
+}

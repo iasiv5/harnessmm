@@ -1,0 +1,43 @@
+{
+  "graph_id": "verify-chain-r3-retry",
+  "rationale": "注入故障为一次性，重跑集成测试后剩余步骤参数不变。",
+  "nodes": [
+    {
+      "node_id": "n3",
+      "tool_name": "run_command",
+      "args": {
+        "argv": [
+          "python",
+          "tools/build_artifact.py",
+          "--out",
+          "dist/package.zip"
+        ]
+      },
+      "depends_on": "root",
+      "guard": {
+        "exit_code": 0
+      },
+      "order": 0
+    },
+    {
+      "node_id": "n4",
+      "tool_name": "run_command",
+      "args": {
+        "argv": [
+          "python",
+          "tools/verify_artifact.py",
+          "--file",
+          "dist/package.zip"
+        ]
+      },
+      "depends_on": "n3",
+      "guard": {
+        "exit_code": 0
+      },
+      "order": 1
+    }
+  ],
+  "workspace_hash_at_authoring": "sha256:5625ac0c58e9af4b484f7b2f",
+  "authored_in_request_id": "req-formal-1-arm_r3-002",
+  "graph_hash": "sha256:5830e3ae0080405e"
+}

@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<title>HarnessMM 回放 — RUN R1</title>
+<style>
+  :root { --bg:#0f1117; --panel:#161a23; --line:#232936; --fg:#d7dce5; --dim:#8a93a5;
+          --green:#4ade80; --red:#f87171; --amber:#fbbf24; --blue:#60a5fa; --purple:#c084fc; }
+  * { box-sizing: border-box; }
+  body { margin:0; background:var(--bg); color:var(--fg);
+         font:13px/1.55 "SF Mono", ui-monospace, "PingFang SC", "Microsoft YaHei", monospace; }
+  header { padding:14px 18px; border-bottom:1px solid var(--line); display:flex; gap:16px; align-items:baseline; flex-wrap:wrap;}
+  header h1 { font-size:15px; margin:0; font-weight:600; }
+  .badge { color:#0f1117; background:var(--amber); padding:2px 8px; border-radius:4px; font-weight:700; font-size:11px; }
+  .meta { color:var(--dim); font-size:11px; }
+  .cols { display:grid; grid-template-columns: 5fr 7fr 4fr; gap:1px; background:var(--line); height: calc(100vh - 96px);}
+  .col { background:var(--panel); overflow:auto; padding:12px 14px; min-width:0;}
+  .col h2 { font-size:12px; color:var(--dim); margin:0 0 10px; text-transform:uppercase; letter-spacing:.08em;}
+  .card { border:1px solid var(--line); border-radius:6px; padding:8px 10px; margin-bottom:8px; }
+  .card.decision { border-left:3px solid var(--purple); }
+  .card.tool { border-left:3px solid var(--blue); }
+  .card.bypass { border-left:3px solid var(--green); }
+  .card.fault { border-left:3px solid var(--red); }
+  .card.fallback { border-left:3px solid var(--amber); }
+  .card.model { border-left:3px solid var(--dim); }
+  .tag { font-size:10px; padding:1px 6px; border-radius:3px; margin-right:6px; color:#0f1117; font-weight:700;}
+  .tag.slow{background:var(--dim);} .tag.edg{background:var(--green);} .tag.fallback{background:var(--amber);}
+  .tag.fault{background:var(--red); color:#fff;} .tag.model{background:var(--blue);}
+  pre { margin:4px 0 0; white-space:pre-wrap; word-break:break-all; font-size:11.5px; color:var(--fg); }
+  .dim { color:var(--dim); }
+  .kv { margin-top:4px; }
+  .kv b { color:var(--dim); font-weight:400; margin-right:4px;}
+  .num { font-size:20px; font-weight:700; }
+  .step-q { color:var(--dim); font-size:11px; margin-top:6px; border-top:1px dashed var(--line); padding-top:4px;}
+</style>
+</head>
+<body>
+<header>
+  <h1>HarnessMM 运行回放 — <span id="runid"></span></h1>
+  <span class="badge">真实运行记录回放，非现场执行</span>
+  <span class="meta" id="hdrmeta"></span>
+</header>
+<div class="cols">
+  <div class="col">
+    <h2>左侧 · 模型已提交的决策（创作时点）</h2>
+    <div id="decisions"></div>
+    <div class="step-q">本栏只显示模型在真实请求中提交过的动作与图（含创作时的事件序号），运行时未曾提交的内容不会出现。</div>
+  </div>
+  <div class="col">
+    <h2>中间 · 执行时间线（工具返回 → 条件检查 → 实际路径）</h2>
+    <div id="timeline"></div>
+  </div>
+  <div class="col">
+    <h2>右侧 · 真实请求账本</h2>
+    <div class="card"><div class="num" id="n-calls">–</div><div class="dim">模型调用次数（全部经统一入口）</div></div>
+    <div class="card"><div class="num" id="n-bypass">–</div><div class="dim">CCS 回调替代（bypass，无模型请求）</div></div>
+    <div class="card"><div class="num" id="n-tokens">–</div><div class="dim">供应商实测 token（输入/输出）</div></div>
+    <div class="card"><div id="n-extra" class="kv"></div></div>
+    <div class="card"><b>最终状态</b><pre id="n-status"></pre></div>
+    <div class="card"><b>请求明细</b><div id="ledger-list"></div></div>
+    <div class="step-q">“模型未调用”指该边界没有任何请求记录；本页不把它折算成任何假设成本。</div>
+  </div>
+</div>
+<script type="application/json" id="payload">{"label": "真实运行记录回放，非现场执行", "run_meta": {"run_id": "dev-1-arm_r1", "arm": "R1", "fault_inject": false, "config_hash": "sha256:292635643247e721"}, "arm": "R1", "events_sha256": "sha256:b6313de77cae734417d49eff", "events": [{"event_id": "evt-dev-1-arm_r1-000001", "sequence": 1, "run_id": "dev-1-arm_r1", "task_id": "config-port-hex", "arm": "R1", "event_type": "run_start", "timestamp": "2026-11-03T10:09:05.564305+00:00", "config_hash": "sha256:292635643247e721", "workspace_hash": "sha256:e06a061b4dec86493b713827", "data": {"phase": "verification", "mode": "R1_step_by_step", "checkpoint_workspace_hash": "sha256:e06a061b4dec86493b713827"}}, {"event_id": "evt-dev-1-arm_r1-000002", "sequence": 2, "run_id": "dev-1-arm_r1", "task_id": "config-port-hex", "arm": "R1", "event_type": "model_request", "timestamp": "2026-11-03T10:09:08.051172+00:00", "config_hash": "sha256:292635643247e721", "workspace_hash": "sha256:e06a061b4dec86493b713827", "model_request_id": "req-dev-1-arm_r1-001", "provider_request_id": "20261103180905d8caf1681a3e4118", "purpose": "arm_decision", "route": "slow", "tokens_in": 5870, "tokens_out": 52, "tokens_cached": 0, "tokens_reasoning": 0, "latency_ms": 2485, "data": {"status": "ok", "finish_reason": "stop", "retries": []}}, {"event_id": "evt-dev-1-arm_r1-000003", "sequence": 3, "run_id": "dev-1-arm_r1", "task_id": "config-port-hex", "arm": "R1", "event_type": "tool_execute", "timestamp": "2026-11-03T10:09:08.332014+00:00", "config_hash": "sha256:292635643247e721", "workspace_hash": "sha256:e06a061b4dec86493b713827", "tool_receipt_id": "rcpt-dev-1-arm_r1-001", "tool_receipt_hash": "sha256:c85f49f919d2c7bd", "data": {"tool_name": "run_command", "argv": ["python", "-m", "pytest", "tests/unit", "-q"], "exit_code": 0, "stdout_tail": "...........................                                              [100%]\n27 passed in 0.03s\n", "stderr_tail": "", "injected_fault": null}}, {"event_id": "evt-dev-1-arm_r1-000004", "sequence": 4, "run_id": "dev-1-arm_r1", "task_id": "config-port-hex", "arm": "R1", "event_type": "model_request", "timestamp": "2026-11-03T10:09:10.398470+00:00", "config_hash": "sha256:292635643247e721", "workspace_hash": "sha256:e06a061b4dec86493b713827", "model_request_id": "req-dev-1-arm_r1-002", "provider_request_id": "20261103180908ca3fff40509e4c35", "purpose": "arm_decision", "route": "slow", "tokens_in": 6006, "tokens_out": 55, "tokens_cached": 448, "tokens_reasoning": 0, "latency_ms": 2065, "data": {"status": "ok", "finish_reason": "stop", "retries": []}}, {"event_id": "evt-dev-1-arm_r1-000005", "sequence": 5, "run_id": "dev-1-arm_r1", "task_id": "config-port-hex", "arm": "R1", "event_type": "tool_execute", "timestamp": "2026-11-03T10:09:10.650010+00:00", "config_hash": "sha256:292635643247e721", "workspace_hash": "sha256:e06a061b4dec86493b713827", "tool_receipt_id": "rcpt-dev-1-arm_r1-002", "tool_receipt_hash": "sha256:201e5ecfacd72077", "data": {"tool_name": "run_command", "argv": ["python", "-m", "pytest", "tests/integration", "-q"], "exit_code": 0, "stdout_tail": ".....                                                                    [100%]\n5 passed in 0.02s\n", "stderr_tail": "", "injected_fault": null}}, {"event_id": "evt-dev-1-arm_r1-000006", "sequence": 6, "run_id": "dev-1-arm_r1", "task_id": "config-port-hex", "arm": "R1", "event_type": "model_request", "timestamp": "2026-11-03T10:09:12.335730+00:00", "config_hash": "sha256:292635643247e721", "workspace_hash": "sha256:e06a061b4dec86493b713827", "model_request_id": "req-dev-1-arm_r1-003", "provider_request_id": "2026110318091042590040539d477c", "purpose": "arm_decision", "route": "slow", "tokens_in": 6145, "tokens_out": 55, "tokens_cached": 5952, "tokens_reasoning": 0, "latency_ms": 1684, "data": {"status": "ok", "finish_reason": "stop", "retries": []}}, {"event_id": "evt-dev-1-arm_r1-000007", "sequence": 7, "run_id": "dev-1-arm_r1", "task_id": "config-port-hex", "arm": "R1", "event_type": "tool_execute", "timestamp": "2026-11-03T10:09:12.382811+00:00", "config_hash": "sha256:292635643247e721", "workspace_hash": "sha256:e06a061b4dec86493b713827", "tool_receipt_id": "rcpt-dev-1-arm_r1-003", "tool_receipt_hash": "sha256:82f9a5dc33899693", "data": {"tool_name": "run_command", "argv": ["python", "tools/build_artifact.py", "--out", "dist/package.zip"], "exit_code": 0, "stdout_tail": "BUILD OK: <workspace>/adhoc_jobs/harnessmm_mechanism/runs/dev-1/arm_r1/workspace/dist/package.zip (1222 bytes, 2 files + manifest)\n", "stderr_tail": "", "injected_fault": null}}, {"event_id": "evt-dev-1-arm_r1-000008", "sequence": 8, "run_id": "dev-1-arm_r1", "task_id": "config-port-hex", "arm": "R1", "event_type": "model_request", "timestamp": "2026-11-03T10:09:14.080150+00:00", "config_hash": "sha256:292635643247e721", "workspace_hash": "sha256:e06a061b4dec86493b713827", "model_request_id": "req-dev-1-arm_r1-004", "provider_request_id": "20261103180912bca87e9d03e140ff", "purpose": "arm_decision", "route": "slow", "tokens_in": 6313, "tokens_out": 59, "tokens_cached": 6144, "tokens_reasoning": 0, "latency_ms": 1695, "data": {"status": "ok", "finish_reason": "stop", "retries": []}}, {"event_id": "evt-dev-1-arm_r1-000009", "sequence": 9, "run_id": "dev-1-arm_r1", "task_id": "config-port-hex", "arm": "R1", "event_type": "tool_execute", "timestamp": "2026-11-03T10:09:14.131912+00:00", "config_hash": "sha256:292635643247e721", "workspace_hash": "sha256:e06a061b4dec86493b713827", "tool_receipt_id": "rcpt-dev-1-arm_r1-004", "tool_receipt_hash": "sha256:c4adf88813ff79c4", "data": {"tool_name": "run_command", "argv": ["python", "tools/verify_artifact.py", "--file", "dist/package.zip"], "exit_code": 0, "stdout_tail": "ARTIFACT VERIFY: PASS (2 files hash-checked, 12+ behaviour samples OK)\n", "stderr_tail": "", "injected_fault": null}}, {"event_id": "evt-dev-1-arm_r1-000010", "sequence": 10, "run_id": "dev-1-arm_r1", "task_id": "config-port-hex", "arm": "R1", "event_type": "model_request", "timestamp": "2026-11-03T10:09:17.536890+00:00", "config_hash": "sha256:292635643247e721", "workspace_hash": "sha256:e06a061b4dec86493b713827", "model_request_id": "req-dev-1-arm_r1-005", "provider_request_id": "2026110318091445fe69da7c3d4123", "purpose": "arm_decision", "route": "slow", "tokens_in": 6463, "tokens_out": 105, "tokens_cached": 6272, "tokens_reasoning": 0, "latency_ms": 3403, "data": {"status": "ok", "finish_reason": "stop", "retries": []}}, {"event_id": "evt-dev-1-arm_r1-000011", "sequence": 11, "run_id": "dev-1-arm_r1", "task_id": "config-port-hex", "arm": "R1", "event_type": "scorer_run", "timestamp": "2026-11-03T10:09:18.189240+00:00", "config_hash": "sha256:292635643247e721", "workspace_hash": "sha256:e06a061b4dec86493b713827", "data": {"exit_code": 0, "output_tail": "N3_build             PASS  exit=0 BUILD OK: <workspace>/adhoc_jobs/harnessmm_mechanism/runs/dev-1/arm_r1/workspace/dist/package.zip (1222 bytes, 2 files + manifest)\nN4_verify            PASS  exit=0 ARTIFACT VERIFY: PASS (2 files hash-checked, 12+ behaviour samples OK)\nindependent_vectors  PASS  all 22 vectors OK\nSCORER: PASS"}}, {"event_id": "evt-dev-1-arm_r1-000012", "sequence": 12, "run_id": "dev-1-arm_r1", "task_id": "config-port-hex", "arm": "R1", "event_type": "run_end", "timestamp": "2026-11-03T10:09:18.189421+00:00", "config_hash": "sha256:292635643247e721", "workspace_hash": "sha256:e06a061b4dec86493b713827", "data": {"status": "completed", "bypasses": 0, "model_calls": {"model_calls": 5, "failed_calls": 0, "tokens_in": 30797, "tokens_out": 326, "tokens_cached": 18816, "tokens_total": 31123, "provider_reported": true}}}], "ledger": [{"request_id": "req-dev-1-arm_r1-001", "provider_request_id": "20261103180905d8caf1681a3e4118", "purpose": "arm_decision", "route": "slow", "status": "ok", "model": "glm-5.3-flash", "usage": {"completion_tokens": 52, "completion_tokens_details": {"reasoning_tokens": 0}, "prompt_tokens": 5870, "prompt_tokens_details": {"cached_tokens": 0}, "total_tokens": 5922}, "latency_ms": 2485, "retries": [], "content_full": "{\"thought\": \"验证阶段开始，第一步运行单元测试 N1。\", \"action\": {\"tool_name\": \"run_command\", \"args\": {\"argv\": [\"python\", \"-m\", \"pytest\", \"tests/unit\", \"-q\"]}}}"}, {"request_id": "req-dev-1-arm_r1-002", "provider_request_id": "20261103180908ca3fff40509e4c35", "purpose": "arm_decision", "route": "slow", "status": "ok", "model": "glm-5.3-flash", "usage": {"completion_tokens": 55, "completion_tokens_details": {"reasoning_tokens": 0}, "prompt_tokens": 6006, "prompt_tokens_details": {"cached_tokens": 448}, "total_tokens": 6061}, "latency_ms": 2065, "retries": [], "content_full": "{\"thought\": \"N1 通过，继续 N2 集成测试。\", \"action\": {\"tool_name\": \"run_command\", \"args\": {\"argv\": [\"python\", \"-m\", \"pytest\", \"tests/integration\", \"-q\"]}}}"}, {"request_id": "req-dev-1-arm_r1-003", "provider_request_id": "2026110318091042590040539d477c", "purpose": "arm_decision", "route": "slow", "status": "ok", "model": "glm-5.3-flash", "usage": {"completion_tokens": 55, "completion_tokens_details": {"reasoning_tokens": 0}, "prompt_tokens": 6145, "prompt_tokens_details": {"cached_tokens": 5952}, "total_tokens": 6200}, "latency_ms": 1684, "retries": [], "content_full": "{\"thought\": \"N2 通过，继续 N3 构建产物。\", \"action\": {\"tool_name\": \"run_command\", \"args\": {\"argv\": [\"python\", \"tools/build_artifact.py\", \"--out\", \"dist/package.zip\"]}}}"}, {"request_id": "req-dev-1-arm_r1-004", "provider_request_id": "20261103180912bca87e9d03e140ff", "purpose": "arm_decision", "route": "slow", "status": "ok", "model": "glm-5.3-flash", "usage": {"completion_tokens": 59, "completion_tokens_details": {"reasoning_tokens": 0}, "prompt_tokens": 6313, "prompt_tokens_details": {"cached_tokens": 6144}, "total_tokens": 6372}, "latency_ms": 1695, "retries": [], "content_full": "{\"thought\": \"N3 构建成功，执行 N4 产物校验。\", \"action\": {\"tool_name\": \"run_command\", \"args\": {\"argv\": [\"python\", \"tools/verify_artifact.py\", \"--file\", \"dist/package.zip\"]}}}"}, {"request_id": "req-dev-1-arm_r1-005", "provider_request_id": "2026110318091445fe69da7c3d4123", "purpose": "arm_decision", "route": "slow", "status": "ok", "model": "glm-5.3-flash", "usage": {"completion_tokens": 105, "completion_tokens_details": {"reasoning_tokens": 0}, "prompt_tokens": 6463, "prompt_tokens_details": {"cached_tokens": 6272}, "total_tokens": 6568}, "latency_ms": 3403, "retries": [], "content_full": "{\"thought\": \"N1–N4 全部通过，验证阶段完成。\", \"phase_complete\": true, \"summary\": \"验证链依次完成：N1 单元测试 27 通过；N2 集成测试 5 通过；N3 构建 dist/package.zip 成功（1222 字节，2 文件+清单）；N4 产物校验 PASS（哈希校验及行为样本全部通过）。工作区与修复完成时一致，无需改动。\"}"}], "receipts": {"rcpt-dev-1-arm_r1-004": {"tool_receipt_id": "rcpt-dev-1-arm_r1-004", "tool_name": "run_command", "args": {"argv": ["python", "tools/verify_artifact.py", "--file", "dist/package.zip"]}, "timestamp": "2026-11-03T10:09:14.131616+00:00", "exit_code": 0, "stdout": "ARTIFACT VERIFY: PASS (2 files hash-checked, 12+ behaviour samples OK)\n", "stderr": "", "duration_s": 0.051174, "timed_out": false, "whitelist_entry": "python tools/verify_artifact.py --file dist/package.zip", "resolved_argv": ["<workspace>/adhoc_jobs/harnessmm_mechanism/.venv/bin/python", "tools/verify_artifact.py", "--file", "dist/package.zip"], "injected_fault": null, "tool_receipt_hash": "sha256:c4adf88813ff79c4"}, "rcpt-dev-1-arm_r1-001": {"tool_receipt_id": "rcpt-dev-1-arm_r1-001", "tool_name": "run_command", "args": {"argv": ["python", "-m", "pytest", "tests/unit", "-q"]}, "timestamp": "2026-11-03T10:09:08.331380+00:00", "exit_code": 0, "stdout": "...........................                                              [100%]\n27 passed in 0.03s\n", "stderr": "", "duration_s": 0.279923, "timed_out": false, "whitelist_entry": "python -m pytest tests/unit -q", "resolved_argv": ["<workspace>/adhoc_jobs/harnessmm_mechanism/.venv/bin/python", "-m", "pytest", "tests/unit", "-q"], "injected_fault": null, "tool_receipt_hash": "sha256:c85f49f919d2c7bd"}, "rcpt-dev-1-arm_r1-002": {"tool_receipt_id": "rcpt-dev-1-arm_r1-002", "tool_name": "run_command", "args": {"argv": ["python", "-m", "pytest", "tests/integration", "-q"]}, "timestamp": "2026-11-03T10:09:10.649679+00:00", "exit_code": 0, "stdout": ".....                                                                    [100%]\n5 passed in 0.02s\n", "stderr": "", "duration_s": 0.250897, "timed_out": false, "whitelist_entry": "python -m pytest tests/integration -q", "resolved_argv": ["<workspace>/adhoc_jobs/harnessmm_mechanism/.venv/bin/python", "-m", "pytest", "tests/integration", "-q"], "injected_fault": null, "tool_receipt_hash": "sha256:201e5ecfacd72077"}, "rcpt-dev-1-arm_r1-003": {"tool_receipt_id": "rcpt-dev-1-arm_r1-003", "tool_name": "run_command", "args": {"argv": ["python", "tools/build_artifact.py", "--out", "dist/package.zip"]}, "timestamp": "2026-11-03T10:09:12.382520+00:00", "exit_code": 0, "stdout": "BUILD OK: <workspace>/adhoc_jobs/harnessmm_mechanism/runs/dev-1/arm_r1/workspace/dist/package.zip (1222 bytes, 2 files + manifest)\n", "stderr": "", "duration_s": 0.046546, "timed_out": false, "whitelist_entry": "python tools/build_artifact.py --out dist/package.zip", "resolved_argv": ["<workspace>/adhoc_jobs/harnessmm_mechanism/.venv/bin/python", "tools/build_artifact.py", "--out", "dist/package.zip"], "injected_fault": null, "tool_receipt_hash": "sha256:82f9a5dc33899693"}}, "graphs": {}, "summary": {"model_calls": 5, "bypasses": 0, "graphs_authored": 0, "graphs_invalidated": 0, "faults_injected": 0, "tokens_in": 30797, "tokens_out": 326, "tokens_cached": 18816, "tokens_reasoning": 0, "provider_reported_usage": true, "final_status": "completed", "scorer_results": [0]}}</script>
+<script>
+const P = JSON.parse(document.getElementById('payload').textContent);
+document.getElementById('runid').textContent = P.run_meta.run_id || P.arm;
+document.getElementById('hdrmeta').textContent =
+  'arm=' + P.arm + ' · events=' + P.events.length + ' · events_sha256=' + P.events_sha256 + ' · ' + (P.run_meta.fault_inject ? '故障注入已启用' : '无故障注入');
+
+function el(tag, cls, text) { const n = document.createElement(tag); if (cls) n.className = cls; if (text !== undefined) n.textContent = text; return n; }
+function card(cls, tagText, tagCls, title) {
+  const c = el('div', 'card ' + cls);
+  const t = el('span', 'tag ' + tagCls, tagText);
+  c.appendChild(t); c.appendChild(el('b', '', title));
+  return c;
+}
+
+// ---------- 左栏：模型已提交的决策 ----------
+const dec = document.getElementById('decisions');
+const seenGraphs = {};
+for (const g of Object.values(P.graphs)) {
+  const c = card('decision', 'EDG', 'model', g.graph_id);
+  c.appendChild(el('div', 'kv', '')).innerHTML = '';
+  const meta = el('div', 'dim', '创作于请求 ' + (g.authored_in_request_id||'?') + ' · 工作区 ' + (g.workspace_hash_at_authoring||'').slice(0,16));
+  c.appendChild(meta);
+  if (g.rationale) c.appendChild(el('pre', '', 'rationale: ' + g.rationale));
+  for (const n of g.nodes) {
+    const d = el('div', 'kv');
+    d.appendChild(el('pre', '', '· ' + n.node_id + '  ' + n.tool_name + '\n  args: ' + JSON.stringify(n.args) + '\n  depends_on: ' + n.depends_on + '\n  guard: ' + JSON.stringify(n.guard)));
+    c.appendChild(d);
+  }
+  dec.appendChild(c);
+}
+// 决策型回复（R1 / 回退）：从 ledger 里 purpose=arm_decision 且内容含 action 的请求
+for (const r of P.ledger) {
+  if (r.purpose === 'arm_decision' && r.content_full) {
+    try {
+      const j = JSON.parse(r.content_full.trim().split('```').join('').replace(/^[^{]*/, '').replace(/[^}]*$/, ''));
+      if (j.action && !j.graph) {
+        const c = card('decision', 'ACTION', 'model', '单步决策 @' + r.request_id);
+        c.appendChild(el('pre', '', JSON.stringify(j.action)));
+        if (j.thought) c.appendChild(el('pre', 'dim', 'thought: ' + j.thought.slice(0,300)));
+        dec.appendChild(c);
+      }
+    } catch(e) { /* 非决策回复，忽略 */ }
+  }
+}
+
+// ---------- 中栏：执行时间线 ----------
+const tl = document.getElementById('timeline');
+for (const e of P.events) {
+  if (e.event_type === 'model_request') {
+    const c = card('model', e.route ? e.route.toUpperCase() : 'SLOW', 'model', e.model_request_id + ' · ' + (e.purpose||''));
+    c.appendChild(el('pre', 'dim', 'tokens in/out: ' + (e.tokens_in??'?') + '/' + (e.tokens_out??'?') +
+      (e.tokens_cached ? ' · cached ' + e.tokens_cached : '') +
+      (e.tokens_reasoning ? ' · reasoning ' + e.tokens_reasoning : '') + ' · ' + (e.latency_ms??'?') + 'ms'));
+    c.appendChild(el('div', 'step-q', '刚发生了什么：一次真实模型调用（route=' + (e.route||'slow') + '）。'));
+    tl.appendChild(c);
+  } else if (e.event_type === 'tool_execute') {
+    const d = e.data || {};
+    const c = card('tool', 'TOOL', 'slow', (d.tool_name||'') + ' exit=' + (d.exit_code??'?'));
+    if (d.argv) c.appendChild(el('pre', '', d.argv.join(' ')));
+    if (d.path) c.appendChild(el('pre', '', 'path: ' + d.path));
+    if (d.stdout_tail) c.appendChild(el('pre', 'dim', 'stdout: ' + d.stdout_tail.slice(-260)));
+    if (d.stderr_tail) c.appendChild(el('pre', 'dim', 'stderr: ' + d.stderr_tail.slice(-200)));
+    c.appendChild(el('div', 'step-q', '回执 ' + e.tool_receipt_id + '（哈希 ' + (e.tool_receipt_hash||'').slice(0,16) + '）'));
+    tl.appendChild(c);
+  } else if (e.event_type === 'bypass_certificate') {
+    const d = e.data || {};
+    const c = card('bypass', 'EDG', 'edg', '节点 ' + e.node_id + ' 自动执行（无模型调用）');
+    c.appendChild(el('pre', '', JSON.stringify(d.args)));
+    c.appendChild(el('pre', 'dim', 'guard: ' + (e.guard_reason||'') + ' · 前置回执 ' + (e.prior_receipt_id||'') +
+      ' · 参数哈希 ' + (e.authored_args_hash||'').slice(0,10) + '==' + (e.executed_args_hash||'').slice(0,10)));
+    if (d.exit_code !== undefined) c.appendChild(el('pre', 'dim', 'exit=' + d.exit_code + ' stdout: ' + ((d.stdout_tail||'').slice(-180))));
+    if (d.injected_fault) c.appendChild(el('pre', 'fault-tag dim', '⚠ 注入故障命中：' + JSON.stringify(d.injected_fault)));
+    c.appendChild(el('div', 'step-q', '已有决策：该动作在图创作时已保存；运行时只检查了前置完成与守卫条件；实际未调用模型。'));
+    tl.appendChild(c);
+  } else if (e.event_type === 'fault_injected') {
+    const c = card('fault', 'FAULT', 'fault', '注入故障（教学装置）');
+    c.appendChild(el('pre', '', JSON.stringify(e.data)));
+    c.appendChild(el('div', 'step-q', '运行时注入了一次真实失败：子进程真实退出非零；一次性触发并全程标注。'));
+    tl.appendChild(c);
+  } else if (e.event_type === 'graph_authored') {
+    const c = card('decision', 'AUTHOR', 'model', '图 ' + e.graph_id + ' 已保存（' + (e.data?e.data.node_count:'?') + ' 节点）');
+    c.appendChild(el('div', 'step-q', '该图来自真实请求 ' + e.model_request_id + '，先于其后续任何执行（seq ' + e.sequence + '）。'));
+    tl.appendChild(c);
+  } else if (e.event_type === 'graph_invalidated') {
+    const c = card('fallback', 'INVALID', 'fallback', '图 ' + (e.graph_id||'') + ' 失效');
+    c.appendChild(el('pre', 'dim', (e.fallback_reason||'') + ' guard=' + (e.guard_result||'-')));
+    c.appendChild(el('div', 'step-q', '条件不满足或工作区变化：剩余图作废，控制权交回模型。'));
+    tl.appendChild(c);
+  } else if (e.event_type === 'fallback') {
+    const c = card('fallback', 'FALLBACK', 'fallback', '回退到模型');
+    c.appendChild(el('pre', 'dim', e.fallback_reason || ''));
+    tl.appendChild(c);
+  } else if (e.event_type === 'scorer_run') {
+    const c = card('tool', 'SCORER', 'slow', '独立评分器 exit=' + (e.data?e.data.exit_code:'?'));
+    if (e.data && e.data.output_tail) c.appendChild(el('pre', 'dim', e.data.output_tail.slice(-300)));
+    tl.appendChild(c);
+  } else if (e.event_type === 'run_start' || e.event_type === 'run_end') {
+    const c = card('model', e.event_type === 'run_start' ? 'START' : 'END', 'slow', e.event_type === 'run_start' ? (e.data&&e.data.mode||'') : String((e.data&&e.data.status)||''));
+    if (e.data && e.data.model_calls) c.appendChild(el('pre', 'dim', JSON.stringify(e.data.model_calls)));
+    tl.appendChild(c);
+  }
+}
+
+// ---------- 右栏：账本 ----------
+document.getElementById('n-calls').textContent = P.summary.model_calls;
+document.getElementById('n-bypass').textContent = P.summary.bypasses;
+document.getElementById('n-tokens').textContent = P.summary.tokens_in + ' / ' + P.summary.tokens_out;
+const extra = document.getElementById('n-extra');
+extra.innerHTML = '';
+[['图创作', P.summary.graphs_authored], ['图失效', P.summary.graphs_invalidated],
+ ['注入故障', P.summary.faults_injected],
+ ['缓存命中 tokens', P.summary.tokens_cached], ['reasoning tokens', P.summary.tokens_reasoning],
+ ['评分器结果', JSON.stringify(P.summary.scorer_results)],
+ ['provider 实测 usage', '是']].forEach(([k, v]) => {
+  const d = el('div', 'kv');
+  const b = document.createElement('b'); b.textContent = k + ':';
+  d.appendChild(b); d.appendChild(el('span', '', String(v)));
+  extra.appendChild(d);
+});
+document.getElementById('n-status').textContent = P.summary.final_status + ' · arm=' + P.arm;
+const ll = document.getElementById('ledger-list');
+for (const r of P.ledger) {
+  const d = el('div', 'kv');
+  d.appendChild(el('pre', 'dim', (r.request_id||'') + ' · ' + (r.purpose||'') + ' · route=' + (r.route||'') +
+    ' · ' + (r.usage ? ('in ' + r.usage.prompt_tokens + ' out ' + r.usage.completion_tokens) : 'no usage') +
+    (r.provider_request_id ? (' · prov ' + r.provider_request_id) : '') +
+    (r.retries && r.retries.length ? (' · retries ' + r.retries.length) : '')));
+  ll.appendChild(d);
+}
+</script>
+</body>
+</html>

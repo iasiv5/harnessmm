@@ -1,0 +1,12 @@
+{
+  "tool_receipt_id": "rcpt-dev-1-common-008",
+  "tool_name": "read_file",
+  "args": {
+    "path": "server.conf"
+  },
+  "timestamp": "2026-11-03T10:08:10.458825+00:00",
+  "exists": true,
+  "content": "# 教学任务用的最小服务配置\nhost = 127.0.0.1\nport = 0x1F90\nmode = demo\n",
+  "truncated": false,
+  "tool_receipt_hash": "sha256:b2b1062556e1252e"
+}

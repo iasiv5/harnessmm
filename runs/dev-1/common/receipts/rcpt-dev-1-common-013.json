@@ -1,0 +1,11 @@
+{
+  "tool_receipt_id": "rcpt-dev-1-common-013",
+  "tool_name": "write_file",
+  "args": {
+    "path": "config_parser.py"
+  },
+  "timestamp": "2026-11-03T10:08:47.733420+00:00",
+  "bytes_written": 1508,
+  "content_sha256": "sha256:ad21f8c096f990f9",
+  "tool_receipt_hash": "sha256:d1debeaa89bf290e"
+}

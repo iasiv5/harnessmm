@@ -1,0 +1,29 @@
+{
+  "tool_receipt_id": "rcpt-formal-1-common-012",
+  "tool_name": "run_command",
+  "args": {
+    "argv": [
+      "python",
+      "-m",
+      "pytest",
+      "tests/integration",
+      "-q"
+    ]
+  },
+  "timestamp": "2026-11-03T10:12:52.075253+00:00",
+  "exit_code": 0,
+  "stdout": ".....                                                                    [100%]\n5 passed in 0.02s\n",
+  "stderr": "",
+  "duration_s": 0.243566,
+  "timed_out": false,
+  "whitelist_entry": "python -m pytest tests/integration -q",
+  "resolved_argv": [
+    "<workspace>/adhoc_jobs/harnessmm_mechanism/.venv/bin/python",
+    "-m",
+    "pytest",
+    "tests/integration",
+    "-q"
+  ],
+  "injected_fault": null,
+  "tool_receipt_hash": "sha256:04855a7407143a6f"
+}

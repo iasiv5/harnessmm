@@ -1,0 +1,27 @@
+{
+  "tool_receipt_id": "rcpt-formal-1-arm_r3-005",
+  "tool_name": "run_command",
+  "args": {
+    "argv": [
+      "python",
+      "tools/verify_artifact.py",
+      "--file",
+      "dist/package.zip"
+    ]
+  },
+  "timestamp": "2026-11-03T10:14:10.018311+00:00",
+  "exit_code": 0,
+  "stdout": "ARTIFACT VERIFY: PASS (2 files hash-checked, 12+ behaviour samples OK)\n",
+  "stderr": "",
+  "duration_s": 0.051919,
+  "timed_out": false,
+  "whitelist_entry": "python tools/verify_artifact.py --file dist/package.zip",
+  "resolved_argv": [
+    "<workspace>/adhoc_jobs/harnessmm_mechanism/.venv/bin/python",
+    "tools/verify_artifact.py",
+    "--file",
+    "dist/package.zip"
+  ],
+  "injected_fault": null,
+  "tool_receipt_hash": "sha256:8188bebd22dcf625"
+}

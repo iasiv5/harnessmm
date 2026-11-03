@@ -1,0 +1,62 @@
+{
+  "graph_id": "verify-formal-1",
+  "rationale": "验证链四步命令均已确定：单元测试、集成测试、构建、校验，参数为固定字面值，且每步依赖前一步成功（exit_code=0）。",
+  "nodes": [
+    {
+      "node_id": "n1",
+      "tool_name": "run_command",
+      "args": {
+        "argv": [
+          "python",
+          "-m",
+          "pytest",
+          "tests/integration",
+          "-q"
+        ]
+      },
+      "depends_on": "root",
+      "guard": {
+        "exit_code": 0
+      },
+      "order": 0
+    },
+    {
+      "node_id": "n2",
+      "tool_name": "run_command",
+      "args": {
+        "argv": [
+          "python",
+          "tools/build_artifact.py",
+          "--out",
+          "dist/package.zip"
+        ]
+      },
+      "depends_on": "n1",
+      "guard": {
+        "exit_code": 0
+      },
+      "order": 1
+    },
+    {
+      "node_id": "n3",
+      "tool_name": "run_command",
+      "args": {
+        "argv": [
+          "python",
+          "tools/verify_artifact.py",
+          "--file",
+          "dist/package.zip"
+        ]
+      },
+      "depends_on": "n2",
+      "guard": {
+        "exit_code": 0,
+        "stdout_contains": "PASS"
+      },
+      "order": 2
+    }
+  ],
+  "workspace_hash_at_authoring": "sha256:5625ac0c58e9af4b484f7b2f",
+  "authored_in_request_id": "req-formal-1-arm_r2-001",
+  "graph_hash": "sha256:3815196973fa8a3f"
+}
