@@ -19,7 +19,20 @@
 4. **runs/ 是否随仓库发布**：建议发布（这是本项目"以真实记录回放为主"的核心证据），
    体积 ~2.2MB 可接受；若想瘦身可只保留 `runs/formal-1/` + `runs/README.md`，
    dev-1 可后续补传。
-5. **公众号文章中的 GitHub 链接**：`article/wechat/draft.md` 文末为占位符，发布前替换为真实仓库地址。
+5. **公众号文章中的 GitHub 链接**：已替换为真实地址 `iasiv5/harnessmm`（正文结尾 + 发布组件）。
+
+## 发布状态（2026-11-03 完成）
+
+- [x] LICENSE：MIT，已入库
+- [x] 全量终审：8 条记录结构审计 PASS；基础设施测试 22/22 通过
+- [x] 脱敏复核：`/home/ubuntu` 残留 0；真实密钥值全库扫描 0 命中；`.env.local` 确认被忽略
+- [x] 推送：`main` → https://github.com/iasiv5/harnessmm（commit a51943a）
+- [x] 远端抽查：LICENSE / README / results / 公众号草稿 / auth.py 均 200 可达；
+      远端 events 与 ledger 抽样无路径残留、无凭据痕迹
+
+后续维护提醒：本目录是父仓 `adhoc_jobs/` 下的嵌套 git 仓库；改动后同步到远端用
+`git add -A && git commit && git push`；重跑实验或审计后，推送前先跑一遍
+`tools/sanitize_for_release.py --runs-dir runs`。
 
 ## 复跑本实验（本机）
 
